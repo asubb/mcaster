@@ -1,0 +1,96 @@
+{
+  "sequence": [
+    {
+      "pad": "closed-hh",
+      "duration": 500,
+      "offset": 0
+    },
+    {
+      "pad": "kick",
+      "duration": 500,
+      "offset": 0
+    },
+    {
+      "pad": "closed-hh",
+      "duration": 500,
+      "offset": 500
+    },
+    {
+      "pad": "closed-hh",
+      "duration": 500,
+      "offset": 1000
+    },
+    {
+      "pad": "snare",
+      "duration": 500,
+      "offset": 1000
+    },
+    {
+      "pad": "opened-hh",
+      "duration": 500,
+      "offset": 1500
+    },
+
+    {
+      "pad": "closed-hh",
+      "duration": 500,
+      "offset": 2000
+    },
+    {
+      "pad": "kick",
+      "duration": 500,
+      "offset": 2000
+    },
+    {
+      "pad": "closed-hh",
+      "duration": 500,
+      "offset": 2500
+    },
+    {
+      "pad": "closed-hh",
+      "duration": 500,
+      "offset": 3000
+    },
+    {
+      "pad": "snare",
+      "duration": 500,
+      "offset": 3000
+    },
+    {
+      "pad": "opened-hh",
+      "duration": 500,
+      "offset": 3500
+    },
+
+    {
+      "pad": "closed-hh",
+      "duration": 500,
+      "offset": 4000
+    },
+    {
+      "pad": "kick",
+      "duration": 500,
+      "offset": 4000
+    },
+    {
+      "pad": "closed-hh",
+      "duration": 500,
+      "offset": 4500
+    },
+    {
+      "pad": "closed-hh",
+      "duration": 500,
+      "offset": 5000
+    },
+    {
+      "pad": "snare",
+      "duration": 500,
+      "offset": 5000
+    },
+    {
+      "pad": "opened-hh",
+      "duration": 500,
+      "offset": 5500
+    }
+  ]
+}
