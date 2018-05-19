@@ -34,7 +34,7 @@ fun main(args: Array<String>) {
             .toSortedMap(compareBy({ it }))
             .iterator()
     var tick = if (trackPlan.hasNext()) trackPlan.next() else null
-    val factor = 2f
+    val factor = 1f
     var progress = 0L
     do {
         tick?.value

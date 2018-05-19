@@ -91,6 +91,46 @@
       "pad": "opened-hh",
       "duration": 500,
       "offset": 5500
+    },
+    {
+      "pad": "snare",
+      "duration": 500,
+      "offset": 5625
+    },
+    {
+      "pad": "snare",
+      "duration": 500,
+      "offset": 5750
+    },
+    {
+      "pad": "snare",
+      "duration": 500,
+      "offset": 5875
+    },
+    {
+      "pad": "snare",
+      "duration": 500,
+      "offset": 6000
+    },
+    {
+      "pad": "snare",
+      "duration": 500,
+      "offset": 6125
+    },
+    {
+      "pad": "snare",
+      "duration": 500,
+      "offset": 6250
+    },
+    {
+      "pad": "snare",
+      "duration": 500,
+      "offset": 6375
+    },
+    {
+      "pad": "snare",
+      "duration": 500,
+      "offset": 6500
     }
   ]
 }
