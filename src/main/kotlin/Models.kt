@@ -1,20 +1,53 @@
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
+import kotlin.math.max
 
 data class SimpleFraction(
         val numerator: Int,
         val denominator: Int
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        return other is SimpleFraction
+                && (other.numerator * this.denominator) - (other.denominator * this.numerator) == 0
+    }
+
+    override fun hashCode(): Int {
+        throw UnsupportedOperationException("can't use this as a key")
+    }
+}
 
 typealias NoteAppearence = SimpleFraction
 
 data class Measure(
         val timeSignature: SimpleFraction,
+        val bpm: Int,
         val notes: Map<PadType, List<NoteAppearence>>
+) {
+    val tickFraction: SimpleFraction
+
+    init {
+        val mDen = max(
+                timeSignature.denominator,
+                lcm(
+                        notes.values
+                                .flatMap { it }
+                                .map { it.denominator.toLong() }
+                                .toSet()
+                                .toLongArray()
+                ).toInt()
+        )
+
+        tickFraction = SimpleFraction(
+                timeSignature.numerator * mDen / timeSignature.denominator,
+                mDen
+        )
+    }
+
+}
+
+data class Staff(
+        val measures: List<Measure>
 )
-
-data class Staff(val measures: List<Measure>)
-
 
 enum class PadType(@JsonValue val midiNote: Int, @JsonValue val title: String, val abbreviation: String, val note: Char) {
     SNARE(40, "snare", "Sn", '*'),
@@ -35,7 +68,6 @@ private val n0d4 = NoteAppearence(0, 4)
 private val n1d4 = NoteAppearence(1, 4)
 private val n2d4 = NoteAppearence(2, 4)
 private val n3d4 = NoteAppearence(3, 4)
-private val n4d4 = SimpleFraction(4, 4)
 private val n0d16 = NoteAppearence(0, 16)
 private val n1d16 = NoteAppearence(1, 16)
 private val n2d16 = NoteAppearence(2, 16)
@@ -48,10 +80,14 @@ private val n8d16 = NoteAppearence(8, 16)
 private val n9d16 = NoteAppearence(9, 16)
 private val n10d16 = NoteAppearence(10, 16)
 private val n11d16 = NoteAppearence(11, 16)
+
+private val example1Bpm = 120
+private val example1timeSignature = SimpleFraction(6, 8)
 val example1 = Staff(
         listOf(
                 Measure(
-                        n4d4,
+                        example1timeSignature,
+                        example1Bpm,
                         mapOf(
                                 PadType.CLOSE_HH to listOf(n0d4, n1d4, n2d4),
                                 PadType.OPEN_HH to listOf(n3d4),
@@ -60,7 +96,8 @@ val example1 = Staff(
                         )
                 ),
                 Measure(
-                        n4d4,
+                        example1timeSignature,
+                        example1Bpm,
                         mapOf(
                                 PadType.CLOSE_HH to listOf(n0d4, n1d4, n2d4),
                                 PadType.OPEN_HH to listOf(n3d4),
@@ -69,7 +106,8 @@ val example1 = Staff(
                         )
                 ),
                 Measure(
-                        n4d4,
+                        example1timeSignature,
+                        example1Bpm,
                         mapOf(
                                 PadType.SNARE to listOf(n0d16, n1d16, n2d16, n3d16, n4d16, n5d16, n6d16, n7d16, n8d16, n9d16, n10d16, n11d16)
                         )

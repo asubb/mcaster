@@ -1,5 +1,3 @@
-import kotlin.math.max
-
 fun main(args: Array<String>) {
 //    val defaultTerminalFactory = DefaultTerminalFactory()
 //    val term = defaultTerminalFactory.createTerminalEmulator()
@@ -24,16 +22,7 @@ fun main(args: Array<String>) {
             }
 
     staff.measures.forEachIndexed { idx, measure ->
-        val numberOfTicks = max(
-                measure.timeSignature.denominator,
-                lcm(
-                        measure.notes.values
-                                .flatMap { it }
-                                .map { it.denominator.toLong() }
-                                .toSet()
-                                .toLongArray()
-                ).toInt()
-        )
+        val numberOfTicks = measure.tickFraction.numerator
 
         padTypes
                 .map { it to (measure.notes[it] ?: emptyList()) }
