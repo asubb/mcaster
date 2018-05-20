@@ -3,10 +3,9 @@ import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import java.io.File
-import java.util.*
 import javax.sound.midi.*
 
-fun main(args: Array<String>) {
+/*fun main(args: Array<String>) {
 
     val infos = MidiSystem.getMidiDeviceInfo()
     for (info in infos) {
@@ -26,10 +25,11 @@ fun main(args: Array<String>) {
             .first { it.deviceInfo.name.contains("Gervill") }
 
     val mapper = jacksonObjectMapper()
-    val track = mapper.readValue<Track>(File("l1.json"))
+    val track = mapper.readValue<Staff>(File("l1.json"))
 
 
-    val trackPlan = track.sequence
+    val trackPlan = track.measures
+            .flatMap { it }
             .groupBy { it.offset }
             .toSortedMap(compareBy({ it }))
             .iterator()
@@ -42,8 +42,7 @@ fun main(args: Array<String>) {
                 ?.forEach {
                     //                    println(it)
                     mdOut.receiver.send(ShortMessage(ShortMessage.NOTE_ON, 9, it.pad.midiNote, 100), 0)
-                    mdOut.receiver.send(ShortMessage(ShortMessage.NOTE_OFF, 9, it.pad.midiNote, 100),
-                            (it.duration.toFloat() / factor).toLong())
+                    mdOut.receiver.send(ShortMessage(ShortMessage.NOTE_OFF, 9, it.pad.midiNote, 100), 100L)
                 }
         tick = if (trackPlan.hasNext()) trackPlan.next() else null
         val offset = tick?.key?.toFloat()?.div(factor)?.toLong()
@@ -95,29 +94,5 @@ fun main(args: Array<String>) {
 //        println("--DONE-\n")
 //    }
 
-}
-
-data class MEvent(
-        val pad: PadType,
-        val duration: Int,
-        val offset: Int
-)
-
-data class Track(val sequence: List<MEvent>)
-
-
-enum class PadType(@JsonValue val midiNote: Int, @JsonValue val title: String) {
-    SNARE(40, "snare"),
-    KICK(35, "kick"),
-    OPEN_HH(46, "opened-hh"),
-    CLOSE_HH(42, "closed-hh");
-
-    companion object {
-        @JvmStatic
-        @JsonCreator
-        fun fromString(title: String): PadType = PadType.values().first { it.title == title }
-
-        fun byInt(note: Int): PadType = PadType.values().first { it.midiNote == note }
-    }
-}
+}*/
 
