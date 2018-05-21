@@ -81,7 +81,7 @@ private val n9d16 = NoteAppearence(9, 16)
 private val n10d16 = NoteAppearence(10, 16)
 private val n11d16 = NoteAppearence(11, 16)
 
-private val example1Bpm = 240
+private val example1Bpm = 60
 private val example1timeSignature = SimpleFraction(4, 4)
 val example1 = Staff(
         listOf(
@@ -92,7 +92,7 @@ val example1 = Staff(
                                 PadType.CLOSE_HH to listOf(n0d4, n1d4, n2d4),
                                 PadType.OPEN_HH to listOf(n3d4),
                                 PadType.KICK to listOf(n0d4),
-                                PadType.SNARE to listOf(n2d4)
+                                PadType.SNARE to listOf(NoteAppearence(1, 8), n2d4)
                         )
                 ),
                 Measure(
@@ -102,7 +102,7 @@ val example1 = Staff(
                                 PadType.CLOSE_HH to listOf(n0d4, n1d4, n2d4),
                                 PadType.OPEN_HH to listOf(n3d4),
                                 PadType.KICK to listOf(n0d4),
-                                PadType.SNARE to listOf(n2d4)
+                                PadType.SNARE to listOf(NoteAppearence(1, 8), n2d4)
                         )
                 ),
                 Measure(

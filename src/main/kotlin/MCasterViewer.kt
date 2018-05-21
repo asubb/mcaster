@@ -7,41 +7,30 @@ fun main(args: Array<String>) {
 //    val mapper = jacksonObjectMapper()
 //    val staff = mapper.readValue<Staff>(File("l1.json"))
 
-    val staffView = HashMap<String, MutableList<CharArray>>()
     val staff = example1
 
-    // init note lines
-    val padTypes = staff.measures
-            .flatMap { it.notes.keys }
-            .map { it }
-            .distinct()
-    padTypes
-            .map { it.abbreviation }
-            .forEach {
-                staffView[it] = ArrayList((0..staff.measures.size).map { CharArray(0) })
-            }
+    val maxMeasure = staff.measures
+            .maxBy { it.tickFraction.numerator }!!
 
     val extFactor = 2
-
-    // init staff with lines
-    staff.measures.forEachIndexed { idx, measure ->
-        padTypes.forEach {
-            if (staffView[it.abbreviation]!![idx].isEmpty()) {
-                staffView[it.abbreviation]!![idx] = "-".repeat(measure.tickFraction.numerator * extFactor).toCharArray()
-            }
-        }
-    }
-
-    // fill in with notes
-    iterateOver(staff) { idx, padType, noteAppearance, tickFraction ->
-        val i = tickFraction.numerator * extFactor
-        staffView[padType.abbreviation]!![idx][i] = padType.note
-    }
+    val staffView = createTextStaffView(staff, extFactor, maxMeasure.tickFraction.numerator)
 
     staffView.entries.forEach {
         print(it.key + "||")
         print(it.value.joinToString(separator = "|", transform = { it.joinToString(separator = "") }))
         println()
     }
+
+    print(" ".repeat(4))
+
+    val interval = tickInterval(maxMeasure) / extFactor
+    staff.measures.forEach { measure ->
+        (0..(maxMeasure.tickFraction.numerator * extFactor - 1)).forEach {
+            print("^")
+            Thread.sleep(interval)
+        }
+        print("+")
+    }
+
 }
 

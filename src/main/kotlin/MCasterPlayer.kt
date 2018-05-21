@@ -1,7 +1,6 @@
 import javax.sound.midi.MidiSystem
 import javax.sound.midi.ShortMessage
 import javax.sound.midi.Synthesizer
-import kotlin.collections.ArrayList
 
 fun main(args: Array<String>) {
 
@@ -29,20 +28,7 @@ fun main(args: Array<String>) {
         mdOut.receiver.send(ShortMessage(ShortMessage.NOTE_OFF, 9, pad.midiNote, 100), 100)
     }
 
-
-    val playPlan = ArrayList<Any>()
-    var prevTick = SimpleFraction(0, 1)
-    iterateOver(staff) { idx, padType, noteAppearance, tickFraction ->
-        val measure = staff.measures[idx]
-        val timeToWait = tickInterval(measure)
-        val abs = SimpleFraction(idx * tickFraction.denominator + tickFraction.numerator, tickFraction.denominator)
-        if (prevTick != abs) {
-            playPlan.add(timeToWait)
-            prevTick = abs
-        }
-        playPlan.add(padType)
-
-    }
+    val playPlan = createPlayPlan(staff)
 
     println("Play plan: $playPlan")
     playPlan.forEach {
@@ -69,9 +55,3 @@ fun main(args: Array<String>) {
             }
     System.exit(0)
 }
-
-private fun tickInterval(measure: Measure): Long {
-    val beatsIntervalMs = 1 / (measure.bpm / 60.0 / 1000.0)
-    return (beatsIntervalMs * 4 / measure.tickFraction.denominator).toLong()
-}
-
