@@ -1,4 +1,7 @@
-import javax.sound.midi.*
+import javax.sound.midi.MidiSystem
+import javax.sound.midi.ShortMessage
+import javax.sound.midi.Synthesizer
+import kotlin.collections.ArrayList
 
 fun main(args: Array<String>) {
 
@@ -23,52 +26,33 @@ fun main(args: Array<String>) {
 
     fun play(pad: PadType) {
         mdOut.receiver.send(ShortMessage(ShortMessage.NOTE_ON, 9, pad.midiNote, 100), 0)
-        mdOut.receiver.send(ShortMessage(ShortMessage.NOTE_OFF, 9, pad.midiNote, 100), 100L)
+        mdOut.receiver.send(ShortMessage(ShortMessage.NOTE_OFF, 9, pad.midiNote, 100), 100)
     }
 
 
-    staff.measures.forEach { measure ->
-        val beatsIntervalMs = 1 / (measure.bpm / 60.0 / 1000.0)
-        val tickInterval = (beatsIntervalMs * 4 / measure.tickFraction.denominator).toLong()
-        println("Measure: ${measure.tickFraction.numerator}/${measure.tickFraction.denominator}, ${tickInterval}ms/tick")
-        (0..(measure.tickFraction.numerator - 1)).forEach { pos ->
-            val tickFraction = SimpleFraction(pos, measure.tickFraction.denominator)
-            println(">> tick: $tickFraction")
-            measure.notes.entries.asSequence()
-                    .filter { it.value.any { it == tickFraction } }
-                    .map {
-                        println("\t${it.key}: ${it.value.first { it == tickFraction }}")
-                        it.key
-                    }
-                    .forEach { play(it) }
-
-            Thread.sleep(tickInterval)
+    val playPlan = ArrayList<Any>()
+    var prevTick = SimpleFraction(0, 1)
+    iterateOver(staff) { idx, padType, noteAppearance, tickFraction ->
+        val measure = staff.measures[idx]
+        val timeToWait = tickInterval(measure)
+        val abs = SimpleFraction(idx * tickFraction.denominator + tickFraction.numerator, tickFraction.denominator)
+        if (prevTick != abs) {
+            playPlan.add(timeToWait)
+            prevTick = abs
         }
-        println(">>>\n")
+        playPlan.add(padType)
+
     }
 
-//    val trackPlan = track.measures
-//            .flatMap { it }
-//            .groupBy { it.offset }
-//            .toSortedMap(compareBy({ it }))
-//            .iterator()
-//    var tick = if (trackPlan.hasNext()) trackPlan.next() else null
-//    val factor = 1f
-//    var progress = 0L
-//    do {
-//        tick?.value
-////                ?.filter { it.pad != PadType.OPEN_HH }
-//                ?.forEach {
-//                    //                    println(it)
-//                    mdOut.receiver.send(ShortMessage(ShortMessage.NOTE_ON, 9, it.pad.midiNote, 100), 0)
-//                    mdOut.receiver.send(ShortMessage(ShortMessage.NOTE_OFF, 9, it.pad.midiNote, 100), 100L)
-//                }
-//        tick = if (trackPlan.hasNext()) trackPlan.next() else null
-//        val offset = tick?.key?.toFloat()?.div(factor)?.toLong()
-//        val nextEventIn = offset?.minus(progress) ?: 0
-//        Thread.sleep(nextEventIn)
-//        progress += nextEventIn
-//    } while (tick != null)
+    println("Play plan: $playPlan")
+    playPlan.forEach {
+        when (it) {
+            is Long -> Thread.sleep(it)
+            is PadType -> play(it)
+            else -> throw IllegalStateException("Not recognized $it")
+        }
+    }
+
     println("track played")
 
     Thread.sleep(1000)
@@ -76,7 +60,6 @@ fun main(args: Array<String>) {
 
     infos
             .map { MidiSystem.getMidiDevice(it) }
-//            .filter { it.isOpen }
             .forEach { device ->
                 device.receivers.forEach { it.close() }
                 if (device is Synthesizer) {
@@ -84,34 +67,11 @@ fun main(args: Array<String>) {
                 }
                 device.close()
             }
+    System.exit(0)
+}
 
-//        val midiDevice = MidiSystem.getMidiDevice(info)
-//        try {
-//            if (!midiDevice.isOpen) {
-//                println("Opening device")
-//                try {
-//                    midiDevice.open()
-//                } catch (e: Exception) {
-//                    e.printStackTrace(System.out)
-//                }
-//
-//            }
-//            if (
-//                    info.name.contains("LoopBe")
-//                    && midiDevice.maxReceivers < 0 && mdOut == null) {
-//                mdOut = midiDevice
-//                println("Got out device: $mdOut")
-//            }
-//            if (info.name.contains("Fast Track") && midiDevice.maxTransmitters < 0) {
-//                mdIn = midiDevice
-//                println("Got in device: $mdIn")
-//            }
-//        } catch (e: Exception) {
-//            e.printStackTrace(System.out)
-//        }
-//
-//        println("--DONE-\n")
-//    }
-
+private fun tickInterval(measure: Measure): Long {
+    val beatsIntervalMs = 1 / (measure.bpm / 60.0 / 1000.0)
+    return (beatsIntervalMs * 4 / measure.tickFraction.denominator).toLong()
 }
 

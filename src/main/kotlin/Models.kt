@@ -81,7 +81,7 @@ private val n9d16 = NoteAppearence(9, 16)
 private val n10d16 = NoteAppearence(10, 16)
 private val n11d16 = NoteAppearence(11, 16)
 
-private val example1Bpm = 120
+private val example1Bpm = 240
 private val example1timeSignature = SimpleFraction(4, 4)
 val example1 = Staff(
         listOf(
