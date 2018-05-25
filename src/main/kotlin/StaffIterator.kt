@@ -25,13 +25,23 @@ fun iterateOver(staff: Staff, eventHandler: (Int, PadType, NoteAppearence, Simpl
 fun createPlayPlan(staff: Staff): List<Any> {
     val playPlan = ArrayList<Any>()
     var prevTick = SimpleFraction(0, 1)
+    var prevMeasureIdx = 0
     iterateOver(staff) { idx, padType, noteAppearance, tickFraction ->
         val measure = staff.measures[idx]
         val timeToWait = tickInterval(measure)
-        val abs = SimpleFraction(idx * tickFraction.denominator + tickFraction.numerator, tickFraction.denominator)
-        if (prevTick != abs) {
-            playPlan.add(timeToWait)
-            prevTick = abs
+        val absoluteTickVal = SimpleFraction(
+                idx * tickFraction.denominator + tickFraction.numerator,
+                tickFraction.denominator
+        )
+        if (prevTick != absoluteTickVal) {
+            if (prevMeasureIdx != idx) {
+                // there was an end of the measure, need to wait till the end
+                playPlan.add(tickInterval(staff.measures[prevMeasureIdx]))
+                prevMeasureIdx = idx
+            } else {
+                playPlan.add(timeToWait)
+            }
+            prevTick = absoluteTickVal
         }
         playPlan.add(padType)
 
@@ -74,7 +84,9 @@ fun createTextStaffView(staff: Staff, extFactor: Int, measureTicks: Int? = null)
                         (measureTicks ?: staff.measures[idx].tickFraction.numerator) /
                         tickFraction.denominator *
                         extFactor
-        staffView[padType.abbreviation]!![idx][i] = padType.note
+        if (padType.note != null) {
+            staffView[padType.abbreviation]!![idx][i] = padType.note
+        }
     }
     return staffView
 }
